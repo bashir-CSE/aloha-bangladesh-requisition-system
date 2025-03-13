@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <base target="_top" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .course-type-column {
+            width: 15%;
+        }
+
+        .item-column {
+            width: 15%;
+        }
+
+        .level-column {
+            width: 10%;
+        }
+
+        .batch-no-column {
+            width: 15%;
+        }
+
+        .quantity-column {
+            width: 10%;
+        }
+
+        .remarks-column {
+            width: 35%;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 p-6">
+    <div class="max-w-7xl mx-auto bg-white p-8 rounded-lg shadow-md text-center">
+        <img src="https://www.alohabdonline.com/wp-content/uploads/2020/04/ALOHA-Logo-800-px-X-180-px.png"
+            alt="ALOHA Logo" class="mx-auto w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg h-auto mb-4" />
+        <h2 class="text-2xl font-bold mb-4">ALOHA Bangladesh</h2>
+        <h3 class="text-xl mb-6">Class Room Supplies Requisition Slip</h3>
+        <form id="requisitionForm">
+            <input type="hidden" id="currentDate" name="currentDate" />
+            <div class="flex flex-row items-center justify-between gap-4 mb-6">
+                <!-- Branch Name Dropdown -->
+                <div class="flex flex-row items-center gap-2">
+                    <label class="text-sm font-medium text-gray-700">Branch Name:</label>
+                    <select name="branchName" class="w-full p-1 border border-gray-300 rounded-md" required>
+                        <option value="" selected disabled>Select branch name</option>
+                        <option value="Adabor-1">Adabor-1</option>
+                        <option value="Adabor-2">Adabor-2</option>
+                    </select>
+                </div>
+                <!-- Branch Code Dropdown -->
+                <div class="flex flex-row items-center gap-2">
+                    <label class="text-sm font-medium text-gray-700">Branch Code:</label>
+                    <select name="branchCode" class="w-full p-1 border border-gray-300 rounded-md" required>
+                        <option value="" selected disabled>Select branch code</option>
+                        <option value="DAPC">DAPC</option>
+                        <option value="DAMH">DAMH</option>
+                    </select>
+                </div>
+            </div>
+            <div class="overflow-auto">
+                <table class="w-full border-collapse border border-gray-300">
+                    <thead>
+                        <tr>
+                            <th class="border border-gray-300 p-2 bg-gray-100 course-type-column">
+                                Course Type
+                            </th>
+                            <th class="border border-gray-300 p-2 bg-gray-100 item-column">
+                                Item
+                            </th>
+                            <th class="border border-gray-300 p-2 bg-gray-100 level-column">
+                                Level
+                            </th>
+                            <th class="border border-gray-300 p-2 bg-gray-100 batch-no-column">
+                                Batch No
+                            </th>
+                            <th class="border border-gray-300 p-2 bg-gray-100 quantity-column">
+                                Quantity
+                            </th>
+                            <th class="border border-gray-300 p-2 bg-gray-100 remarks-column">
+                                Remarks
+                            </th>
+                            <th class="border border-gray-300 p-2 bg-gray-100">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Initial Row -->
+                        <tr>
+                            <td class="border border-gray-300 p-1 course-type-column">
+                                <select name="courseType" class="w-full" required>
+                                    <option value="" selected disabled>
+                                        Select course type
+                                    </option>
+                                    <option value="Senior">Senior</option>
+                                    <option value="Junior">Junior</option>
+                                </select>
+                            </td>
+                            <td class="border border-gray-300 p-1 item-column">
+                                <select name="item" class="w-full" required>
+                                    <option value="" selected disabled>Select an item</option>
+                                    <option value="Student Bag">Student Bag</option>
+                                    <option value="Abacus-Student">Abacus-Student</option>
+                                </select>
+                            </td>
+                            <td class="border border-gray-300 p-1 level-column">
+                                <input type="text" name="level" class="w-full" required />
+                            </td>
+                            <td class="border border-gray-300 p-1 batch-no-column">
+                                <input type="text" name="batchNo" class="w-full" required />
+                            </td>
+                            <td class="border border-gray-300 p-1 quantity-column">
+                                <input type="text" name="quantity" class="w-full" required />
+                            </td>
+                            <td class="border border-gray-300 p-1 remarks-column">
+                                <textarea name="remarks" class="w-full"></textarea>
+                            </td>
+                            <td class="p-2">
+                                <button type="button" onclick="removeRow(this)"
+                                    class="px-2 py-1 bg-red-500 text-white font-semibold rounded-md hover:bg-red-600 focus:outline-none">
+                                    X
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="text-center mt-4">
+                <button type="button" onclick="addRow()"
+                    class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    Add Row
+                </button>
+            </div>
+            <div class="text-center mt-6">
+                <button type="button" onclick="submitForm()" id="savePdfBtn"
+                    class="px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                    Save as PDF
+                </button>
+                <div id="processingMessage" class="hidden mt-2 text-green-600">
+                    Processing...
+                </div>
+                <div id="errorMessage" class="hidden mt-2 text-red-600">
+                    Failed to generate PDF. Please try again.
+                </div>
+                <div id="successMessage" class="hidden mt-2 text-green-600">
+                    Requisition saved and PDF downloaded!
+                </div>
+            </div>
+        </form>
+        <div class="flex justify-center mt-4 space-x-4">
+            <div class="text-center">
+                <a href="https://drive.google.com/uc?export=download&id=1LnMoE71v3UMve3hdXoNqID86gmcANVgG"
+                    class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" download>
+                    Get Blank Requisition Form
+                </a>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Add Row Function
+        function addRow() {
+            const tbody = document.querySelector("tbody");
+            const newRow = document.createElement("tr");
+            newRow.innerHTML = `
+                <td class="border border-gray-300 course-type-column">
+    <select name="courseType" class="w-full" required>
+        <option value="" selected disabled>Select course type</option>
+        <option value="Senior">Senior</option>
+        <option value="Junior">Junior</option>
+    </select>
+</td>
+<td class="border border-gray-300 item-column">
+    <select name="item" class="w-full" required>
+        <option value="" selected disabled>Select an item</option>
+        <option value="Student Bag">Student Bag</option>
+
+    </select>
+</td>
+<td class="border border-gray-300 level-column">
+    <input type="text" name="level" class="w-full" required autocomplete="on">
+</td>
+<td class="border border-gray-300 batch-no-column">
+    <input type="text" name="batchNo" class="w-full" required autocomplete="on">
+</td>
+<td class="border border-gray-300 quantity-column">
+    <input type="text" name="quantity" class="w-full" required autocomplete="on">
+</td>
+<td class="border border-gray-300 remarks-column">
+    <textarea name="remarks" class="w-full" autocomplete="on"></textarea>
+</td>
+<td class="">
+    <button type="button" onclick="removeRow(this)" class="px-2 py-1 bg-red-500 text-white font-semibold rounded-md hover:bg-red-600 focus:outline-none">
+        X
+    </button>
+</td>
+            `;
+            tbody.appendChild(newRow);
+        }
+
+        // Remove Row Function
+        function removeRow(button) {
+            const row = button.closest("tr");
+            if (row) {
+                row.remove();
+            }
+        }
+
+        function submitForm() {
+            if (!validateForm()) return;
+
+            const currentDate = new Date();
+            document.getElementById("currentDate").value = formatDate(currentDate);
+
+            const rows = document.querySelectorAll("tbody tr");
+            const data = [];
+            rows.forEach((row) => {
+                const rowData = {
+                    courseType: row.querySelector('[name="courseType"]').value,
+                    item: row.querySelector('[name="item"]').value,
+                    level: row.querySelector('[name="level"]').value,
+                    batchNo: row.querySelector('[name="batchNo"]').value,
+                    quantity: row.querySelector('[name="quantity"]').value,
+                    remarks: row.querySelector('[name="remarks"]').value || "",
+                };
+                data.push(rowData);
+            });
+
+            const branchName = document.querySelector('[name="branchName"]').value;
+            const branchCode = document.querySelector('[name="branchCode"]').value;
+            const currentDateValue = document.getElementById("currentDate").value;
+
+            // Show processing message
+            document.getElementById("savePdfBtn").disabled = true;
+            document.getElementById("processingMessage").classList.remove("hidden");
+            document.getElementById("errorMessage").classList.add("hidden");
+            document.getElementById("successMessage").classList.add("hidden");
+
+            google.script.run
+                .withSuccessHandler((response) => {
+                    if (response.success) {
+                        // Show success message
+                        document
+                            .getElementById("processingMessage")
+                            .classList.add("hidden");
+                        document.getElementById("successMessage").textContent =
+                            response.message;
+                        document
+                            .getElementById("successMessage")
+                            .classList.remove("hidden");
+
+                        // Clear the form
+                        document.getElementById("requisitionForm").reset();
+
+                        // Remove all rows except the first one
+                        const tbody = document.querySelector("tbody");
+                        const rows = tbody.querySelectorAll("tr");
+                        rows.forEach((row, index) => {
+                            if (index > 0) {
+                                row.remove();
+                            }
+                        });
+
+                        // Enable the "Save PDF" button
+                        document.getElementById("savePdfBtn").disabled = false;
+
+                        // Hide the success message after 10 seconds
+                        setTimeout(() => {
+                            document
+                                .getElementById("successMessage")
+                                .classList.add("hidden");
+                        }, 10000);
+
+                        // Trigger download
+                        const link = document.createElement("a");
+                        link.href = `data:application/pdf;base64,${response.pdfBase64}`;
+                        link.download = "Requisition.pdf";
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    } else {
+                        // Show error message
+                        document
+                            .getElementById("processingMessage")
+                            .classList.add("hidden");
+                        document.getElementById("errorMessage").textContent =
+                            response.message;
+                        document
+                            .getElementById("errorMessage")
+                            .classList.remove("hidden");
+                        document.getElementById("savePdfBtn").disabled = false;
+                    }
+                })
+                .withFailureHandler((error) => {
+                    console.error("Error in saveRequisition:", error);
+                    document
+                        .getElementById("processingMessage")
+                        .classList.add("hidden");
+                    document.getElementById("errorMessage").textContent =
+                        "Failed to generate PDF. Please try again.";
+                    document.getElementById("errorMessage").classList.remove("hidden");
+                    document.getElementById("savePdfBtn").disabled = false;
+                })
+                .saveRequisition(data, branchName, branchCode, currentDateValue);
+        }
+
+        // Validate Form Function
+        function validateForm() {
+            const rows = document.querySelectorAll("tbody tr");
+            for (const row of rows) {
+                const inputs = row.querySelectorAll("select, input");
+                for (const input of inputs) {
+                    if (input.required && !input.value.trim()) {
+                        alert("Please fill all required fields before submitting.");
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        // Format Date Function
+        function formatDate(date) {
+            const day = String(date.getDate()).padStart(2, "0"); // DD
+            const month = String(date.getMonth() + 1).padStart(2, "0"); // MM
+            const year = date.getFullYear(); // YYYY
+            let hours = date.getHours();
+            const minutes = String(date.getMinutes()).padStart(2, "0"); // MM
+            const ampm = hours >= 12 ? "PM" : "AM";
+            hours = hours % 12;
+            hours = hours ? hours : 12; // Handle midnight (0 hours)
+            return `${day}/${month}/${year} ${hours}:${minutes} ${ampm}`;
+        }
+    </script>
+</body>
+
+</html>
